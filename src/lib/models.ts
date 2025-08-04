@@ -25,6 +25,7 @@ export async function generateWithOpenAI<T>(
   try {
     // Use max_completion_tokens for o3 models, max_tokens for others
     const tokenParam = model.includes('o3') ? 'max_completion_tokens' : 'max_tokens';
+    const isO3Model = model.includes('o3');
     
     const requestBody: any = {
       model,
@@ -34,10 +35,14 @@ export async function generateWithOpenAI<T>(
           content: prompt
         }
       ],
-      temperature,
       response_format: { type: 'json_object' },
       [tokenParam]: maxTokens
     };
+
+    // Only add temperature for non-o3 models (o3 only supports default temperature of 1)
+    if (!isO3Model) {
+      requestBody.temperature = temperature;
+    }
 
     const response = await openai.chat.completions.create(requestBody);
 
