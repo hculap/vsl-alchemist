@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Render
+  postgres:
+    image: postgres:15-alpine
+    container_name: vsl-alchemist-postgres-prod
+    environment:
+      POSTGRES_DB: vsl_alchemist
+      POSTGRES_USER: vsl_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vsl_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vsl_user -d vsl_alchemist"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    # Don't expose port externally for security
+    # ports:
+    #   - "5432:5432"
+
+  # VSL-Alchemist Application
+  app:
+    build:
+      context: .
+      target: production
+    container_name: vsl-alchemist-app-prod
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://vsl_user:${POSTGRES_PASSWORD:-vsl_password}@postgres:5432/vsl_alchemist
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PORT=10000
+    ports:
+      - "10000:10000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data: 
