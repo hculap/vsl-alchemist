@@ -77,6 +77,17 @@ export async function initializeDatabase(): Promise<boolean> {
       )
     `);
     
+    // Add missing columns to existing tables (migration)
+    try {
+      await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'en\'');
+      await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+      await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'en\'');
+      await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+      console.log('✅ Database migration completed');
+    } catch (error) {
+      console.log('ℹ️  Migration step completed (columns may already exist)');
+    }
+    
     // Create indexes
     await pool.query('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_business_profiles_user_id ON business_profiles(user_id)');
