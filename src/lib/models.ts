@@ -7,11 +7,14 @@ import { openAICompatible } from '@genkit-ai/compat-oai';
 export const MODELS = {
   GOOGLE: {
     GEMINI_20_FLASH_LITE: gemini20FlashLite,
+  },
+  OPENAI: {
+    GPT_4O: 'gpt-4o',
   }
 } as const;
 
-// Default model selection - using Google model for now
-export const DEFAULT_MODEL = MODELS.GOOGLE.GEMINI_20_FLASH_LITE;
+// Default model selection - using OpenAI GPT-4o
+export const DEFAULT_MODEL = 'openai/gpt-4o';
 
 // Language prompts for different languages
 export const LANGUAGE_PROMPTS = {
