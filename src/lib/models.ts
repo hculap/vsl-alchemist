@@ -23,7 +23,10 @@ export async function generateWithOpenAI<T>(
   maxTokens: number = 4000
 ): Promise<T> {
   try {
-    const response = await openai.chat.completions.create({
+    // Use max_completion_tokens for o3 models, max_tokens for others
+    const tokenParam = model.includes('o3') ? 'max_completion_tokens' : 'max_tokens';
+    
+    const requestBody: any = {
       model,
       messages: [
         {
@@ -32,9 +35,11 @@ export async function generateWithOpenAI<T>(
         }
       ],
       temperature,
-      max_tokens: maxTokens,
-      response_format: { type: 'json_object' }
-    });
+      response_format: { type: 'json_object' },
+      [tokenParam]: maxTokens
+    };
+
+    const response = await openai.chat.completions.create(requestBody);
 
     const content = response.choices[0]?.message?.content;
     if (!content) {

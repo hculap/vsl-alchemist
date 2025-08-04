@@ -1,12 +1,30 @@
 -- VSL-Alchemist Database Initialization Script
 -- This script runs when the PostgreSQL container starts
 
+-- Create user if it doesn't exist
+DO
+$do$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'vsl_user') THEN
+      CREATE USER vsl_user WITH PASSWORD 'vsl_password';
+   END IF;
+END
+$do$;
+
 -- Create database if it doesn't exist
 SELECT 'CREATE DATABASE vsl_alchemist'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'vsl_alchemist')\gexec
 
+-- Grant privileges to user
+GRANT ALL PRIVILEGES ON DATABASE vsl_alchemist TO vsl_user;
+
 -- Connect to the database
 \c vsl_alchemist;
+
+-- Grant schema privileges
+GRANT ALL ON SCHEMA public TO vsl_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO vsl_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO vsl_user;
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
