@@ -7,7 +7,7 @@ export const BusinessProfileSchema = z.object({
   problems: z.string().describe('Main problems and frustrations of the client'),
   desires: z.string().describe('Client desires and wanted outcomes'),
   tone: z.enum(['Professional', 'Funny', 'Inspiring', 'Direct']).describe('Brand voice tone'),
-  language: z.string().default('en').describe('Language for content generation')
+  language: z.string().default('pl').describe('Language for content generation')
 });
 
 export type BusinessProfile = z.infer<typeof BusinessProfileSchema>;
@@ -16,7 +16,7 @@ export type BusinessProfile = z.infer<typeof BusinessProfileSchema>;
 export const CampaignInputSchema = z.object({
   businessProfile: BusinessProfileSchema,
   vslTitle: z.string().describe('Selected VSL title for the campaign'),
-  language: z.string().default('en').describe('Language for campaign generation')
+  language: z.string().default('pl').describe('Language for campaign generation')
 });
 
 export type CampaignInput = z.infer<typeof CampaignInputSchema>;

@@ -40,8 +40,8 @@ export const generateAdsFlow = defineAction(
   },
   async (input) => {
     const { businessProfile, vslTitle, language } = input;
-    const selectedLanguage = (language || businessProfile.language || 'en') as keyof typeof LANGUAGE_PROMPTS;
-    const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['en'];
+    const selectedLanguage = (language || businessProfile.language || 'pl') as keyof typeof LANGUAGE_PROMPTS;
+    const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['pl'];
 
     const baseContext = `
 ${languagePrompt}

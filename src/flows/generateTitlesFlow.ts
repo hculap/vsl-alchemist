@@ -32,8 +32,8 @@ export const generateTitlesFlow = defineAction(
   },
   async (input) => {
     const { businessProfile } = input;
-    const selectedLanguage = (businessProfile.language || 'en') as keyof typeof LANGUAGE_PROMPTS;
-    const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['en'];
+    const selectedLanguage = (businessProfile.language || 'pl') as keyof typeof LANGUAGE_PROMPTS;
+    const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['pl'];
 
     const titlePrompt = `
 You are an expert copywriter specializing in creating compelling, practical titles for educational Video Sales Letters (VSLs).

@@ -33,8 +33,8 @@ export const generateVslFlow = defineAction(
   },
   async (input) => {
     const { businessProfile, vslTitle, language } = input;
-    const selectedLanguage = (language || businessProfile.language || 'en') as keyof typeof LANGUAGE_PROMPTS;
-    const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['en'];
+    const selectedLanguage = (language || businessProfile.language || 'pl') as keyof typeof LANGUAGE_PROMPTS;
+    const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['pl'];
 
     const vslPrompt = `
 You are an expert copywriter specializing in creating practical, educational Video Sales Letters (VSL) that deliver immediate value.

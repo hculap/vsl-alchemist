@@ -202,6 +202,13 @@ class VSLAlchemist {
                                         <option value="Direct">Bezpośredni</option>
                                     </select>
                                 </div>
+                                <div class="form-group">
+                                    <label for="profileLanguage" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Język:</label>
+                                    <select id="profileLanguage" required>
+                                        <option value="">Wybierz język</option>
+                                    </select>
+                                    <small style="color: #666; font-size: 0.9rem;">Język w którym będzie generowana treść dla tego profilu.</small>
+                                </div>
                                 <button type="submit" class="btn btn-primary">Zapisz Profil</button>
                             </form>
                         </div>
@@ -350,6 +357,15 @@ class VSLAlchemist {
             this.availableLanguages.map(lang => `
                 <option value="${lang.code}">${lang.name}</option>
             `).join('');
+        
+        // Also populate the profile language select
+        const profileLanguageSelect = document.getElementById('profileLanguage');
+        if (profileLanguageSelect && this.availableLanguages) {
+            profileLanguageSelect.innerHTML = '<option value="">Wybierz język</option>' +
+                this.availableLanguages.map(lang => `
+                    <option value="${lang.code}">${lang.name}</option>
+                `).join('');
+        }
     }
 
     async loadProfiles() {
@@ -507,6 +523,7 @@ class VSLAlchemist {
             problems: document.getElementById('problems').value,
             desires: document.getElementById('desires').value,
             tone: document.getElementById('tone').value,
+            language: document.getElementById('profileLanguage').value,
         };
 
         try {
@@ -887,6 +904,14 @@ class VSLAlchemist {
                                 <option value="Direct" ${profile.tone === 'Direct' ? 'selected' : ''}>Bezpośredni</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>Język</label>
+                            <select id="editLanguage" required>
+                                ${this.availableLanguages ? this.availableLanguages.map(lang => 
+                                    `<option value="${lang.code}" ${profile.language === lang.code ? 'selected' : ''}>${lang.name}</option>`
+                                ).join('') : '<option value="pl" selected>Polski</option>'}
+                            </select>
+                        </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
                             <button type="button" class="btn btn-outline" onclick="this.closest('.modal').remove()">Anuluj</button>
@@ -905,7 +930,8 @@ class VSLAlchemist {
                 avatar: document.getElementById('editAvatar').value,
                 problems: document.getElementById('editProblems').value,
                 desires: document.getElementById('editDesires').value,
-                tone: document.getElementById('editTone').value
+                tone: document.getElementById('editTone').value,
+                language: document.getElementById('editLanguage').value
             });
         });
     }

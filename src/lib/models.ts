@@ -382,10 +382,10 @@ export async function createBusinessProfile(
 ): Promise<{ id: number } | null> {
   try {
     const result = await pool.query(
-      `INSERT INTO business_profiles (user_id, offer, avatar, problems, desires, tone) 
-       VALUES ($1, $2, $3, $4, $5, $6) 
+      `INSERT INTO business_profiles (user_id, offer, avatar, problems, desires, tone, language) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) 
        RETURNING id`,
-      [userId, profile.offer, profile.avatar, profile.problems, profile.desires, profile.tone]
+      [userId, profile.offer, profile.avatar, profile.problems, profile.desires, profile.tone, profile.language || 'pl']
     );
     return result.rows[0];
   } catch (error) {
@@ -397,12 +397,22 @@ export async function createBusinessProfile(
 export async function getBusinessProfile(userId: number, profileId: number): Promise<BusinessProfile | null> {
   try {
     const result = await pool.query(
-      `SELECT offer, avatar, problems, desires, tone 
+      `SELECT offer, avatar, problems, desires, tone, language 
        FROM business_profiles 
        WHERE id = $1 AND user_id = $2`,
       [profileId, userId]
     );
-    return result.rows[0] || null;
+    const row = result.rows[0];
+    if (!row) return null;
+    
+    return {
+      offer: row.offer,
+      avatar: row.avatar,
+      problems: row.problems,
+      desires: row.desires,
+      tone: row.tone,
+      language: row.language || 'pl'
+    };
   } catch (error) {
     console.error('Error fetching business profile:', error);
     return null;
@@ -412,13 +422,21 @@ export async function getBusinessProfile(userId: number, profileId: number): Pro
 export async function getUserBusinessProfiles(userId: number): Promise<Array<BusinessProfile & { id: number }>> {
   try {
     const result = await pool.query(
-      `SELECT id, offer, avatar, problems, desires, tone 
+      `SELECT id, offer, avatar, problems, desires, tone, language 
        FROM business_profiles 
        WHERE user_id = $1 
        ORDER BY created_at DESC`,
       [userId]
     );
-    return result.rows;
+    return result.rows.map(row => ({
+      id: row.id,
+      offer: row.offer,
+      avatar: row.avatar,
+      problems: row.problems,
+      desires: row.desires,
+      tone: row.tone,
+      language: row.language || 'pl'
+    }));
   } catch (error) {
     console.error('Error fetching user business profiles:', error);
     return [];
@@ -433,9 +451,9 @@ export async function updateBusinessProfile(
   try {
     const result = await pool.query(
       `UPDATE business_profiles 
-       SET offer = $3, avatar = $4, problems = $5, desires = $6, tone = $7, updated_at = CURRENT_TIMESTAMP
+       SET offer = $3, avatar = $4, problems = $5, desires = $6, tone = $7, language = $8, updated_at = CURRENT_TIMESTAMP
        WHERE id = $1 AND user_id = $2`,
-      [profileId, userId, profile.offer, profile.avatar, profile.problems, profile.desires, profile.tone]
+      [profileId, userId, profile.offer, profile.avatar, profile.problems, profile.desires, profile.tone, profile.language || 'pl']
     );
     return (result.rowCount ?? 0) > 0;
   } catch (error) {
