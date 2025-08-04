@@ -1,0 +1,55 @@
+{
+  "name": "vsl-alchemist",
+  "version": "1.0.0",
+  "description": "AI-powered marketing automation tool for high-ticket experts",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "db:init": "psql -U postgres -f database/init.sql",
+    "db:schema": "psql -U postgres -d vsl_alchemist -f database/schema.sql"
+  },
+  "keywords": [
+    "ai",
+    "marketing",
+    "vsl",
+    "genkit",
+    "postgresql"
+  ],
+  "author": "VSL-Alchemist Team",
+  "license": "MIT",
+  "dependencies": {
+    "@genkit-ai/ai": "^1.15.5",
+    "@genkit-ai/compat-oai": "^1.15.5",
+    "@genkit-ai/core": "^1.15.5",
+    "@genkit-ai/googleai": "^1.15.5",
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "jsonwebtoken": "^9.0.0",
+    "pg": "^8.11.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.0",
+    "@types/express": "^4.17.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "jest": "^29.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": "18"
+  }
+}
