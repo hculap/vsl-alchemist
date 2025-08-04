@@ -1,20 +1,54 @@
 import { pool } from './database';
 import { BusinessProfile, CampaignOutput } from '../types';
-import { gemini20FlashLite } from '@genkit-ai/googleai';
-import { openAICompatible } from '@genkit-ai/compat-oai';
+import { openai } from './genkit';
 
 // Model configuration
 export const MODELS = {
-  GOOGLE: {
-    GEMINI_20_FLASH_LITE: gemini20FlashLite,
-  },
   OPENAI: {
     GPT_4O: 'gpt-4o',
+    O3_MINI: 'o3-mini',
+    O3: 'o3'
   }
 } as const;
 
-// Default model selection - using OpenAI GPT-4o
-export const DEFAULT_MODEL = 'openai/gpt-4o';
+// Default model selection - using OpenAI o3
+export const DEFAULT_MODEL = MODELS.OPENAI.O3;
+
+// Helper function for OpenAI API calls with structured output
+export async function generateWithOpenAI<T>(
+  prompt: string,
+  schema: any,
+  model: string = DEFAULT_MODEL,
+  temperature: number = 0.8,
+  maxTokens: number = 4000
+): Promise<T> {
+  try {
+    const response = await openai.chat.completions.create({
+      model,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature,
+      max_tokens: maxTokens,
+      response_format: { type: 'json_object' }
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No response content from OpenAI');
+    }
+
+    // Parse and validate the JSON response
+    const parsed = JSON.parse(content);
+    return schema.parse(parsed);
+  } catch (error) {
+    console.error('OpenAI API call failed:', error);
+    throw new Error(`OpenAI generation failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
 
 // Language prompts for different languages
 export const LANGUAGE_PROMPTS = {

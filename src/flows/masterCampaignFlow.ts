@@ -1,22 +1,13 @@
-import { defineAction } from '@genkit-ai/core';
 import { CampaignInputSchema, CampaignOutputSchema } from '../types';
 import { generateVslFlow } from './generateVslFlow';
 import { generateAdsFlow } from './generateAdsFlow';
-import { registry } from '../lib/genkit';
+import { z } from 'zod';
 
 /**
  * Master Campaign Flow - Main orchestration flow that coordinates
  * VSL and ads generation in parallel for maximum efficiency
  */
-export const masterCampaignFlow = defineAction(
-  registry,
-  {
-    name: 'masterCampaignFlow',
-    inputSchema: CampaignInputSchema,
-    outputSchema: CampaignOutputSchema,
-    actionType: 'flow'
-  },
-  async (input) => {
+export async function masterCampaignFlow(input: z.infer<typeof CampaignInputSchema>): Promise<z.infer<typeof CampaignOutputSchema>> {
     const { businessProfile, vslTitle, language } = input;
 
     // Execute VSL and Ads generation in parallel
@@ -37,5 +28,4 @@ export const masterCampaignFlow = defineAction(
         language
       }
     };
-  }
-);
+}

@@ -1,9 +1,6 @@
-import { defineAction } from '@genkit-ai/core';
-import { generate } from '@genkit-ai/ai';
-import { registry } from '../lib/genkit';
 import { CampaignInputSchema, AdsOutputSchema } from '../types';
 import { z } from 'zod';
-import { LANGUAGE_PROMPTS, DEFAULT_MODEL } from '../lib/models';
+import { LANGUAGE_PROMPTS, DEFAULT_MODEL, generateWithOpenAI } from '../lib/models';
 
 // Schema for structured video scripts
 const StructuredVideoScriptsSchema = z.object({
@@ -30,15 +27,7 @@ const StructuredHeadlinesSchema = z.object({
  * Ads Generation Flow - Creates complete Meta Ads package
  * including video scripts, copy, and headlines
  */
-export const generateAdsFlow = defineAction(
-  registry,
-  {
-    name: 'generateAdsFlow',
-    inputSchema: CampaignInputSchema,
-    outputSchema: AdsOutputSchema,
-    actionType: 'flow'
-  },
-  async (input) => {
+export async function generateAdsFlow(input: z.infer<typeof CampaignInputSchema>): Promise<z.infer<typeof AdsOutputSchema>> {
     const { businessProfile, vslTitle, language } = input;
     const selectedLanguage = (language || businessProfile.language || 'pl') as keyof typeof LANGUAGE_PROMPTS;
     const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['pl'];
@@ -148,53 +137,32 @@ Return ONLY a JSON object with the following structure:
 
     // Execute all generations in parallel with error handling
     const [videoResponse, copyResponse, headlineResponse] = await Promise.all([
-      generate(
-        registry,
-        {
-          model: DEFAULT_MODEL,
-          prompt: videoScriptsPrompt,
-          config: { 
-            temperature: 0.9,
-            maxOutputTokens: 2000 // Increased
-          },
-          output: {
-            schema: StructuredVideoScriptsSchema
-          }
-        }
+      generateWithOpenAI<z.infer<typeof StructuredVideoScriptsSchema>>(
+        videoScriptsPrompt,
+        StructuredVideoScriptsSchema,
+        DEFAULT_MODEL,
+        0.9,
+        2000
       ).catch(error => {
         console.error('Video scripts generation failed:', error.message);
         throw new Error(`Video scripts generation failed: ${error.message}`);
       }),
-      generate(
-        registry,
-        {
-          model: DEFAULT_MODEL,
-          prompt: adCopyPrompt,
-          config: { 
-            temperature: 0.8,
-            maxOutputTokens: 1200 // Increased
-          },
-          output: {
-            schema: StructuredAdCopySchema
-          }
-        }
+      generateWithOpenAI<z.infer<typeof StructuredAdCopySchema>>(
+        adCopyPrompt,
+        StructuredAdCopySchema,
+        DEFAULT_MODEL,
+        0.8,
+        1200
       ).catch(error => {
         console.error('Ad copy generation failed:', error.message);
         throw new Error(`Ad copy generation failed: ${error.message}`);
       }),
-      generate(
-        registry,
-        {
-          model: DEFAULT_MODEL,
-          prompt: headlinePrompt,
-          config: { 
-            temperature: 0.7,
-            maxOutputTokens: 400 // Increased
-          },
-          output: {
-            schema: StructuredHeadlinesSchema
-          }
-        }
+      generateWithOpenAI<z.infer<typeof StructuredHeadlinesSchema>>(
+        headlinePrompt,
+        StructuredHeadlinesSchema,
+        DEFAULT_MODEL,
+        0.7,
+        400
       ).catch(error => {
         console.error('Headlines generation failed:', error.message);
         throw new Error(`Headlines generation failed: ${error.message}`);
@@ -202,9 +170,9 @@ Return ONLY a JSON object with the following structure:
     ]);
 
     // Parse structured responses
-    const videoData = videoResponse.output;
-    const copyData = copyResponse.output;
-    const headlineData = headlineResponse.output;
+    const videoData = videoResponse;
+    const copyData = copyResponse;
+    const headlineData = headlineResponse;
 
     if (!videoData?.videoScripts || !copyData?.adCopyA || !headlineData?.headlineA) {
       throw new Error('Failed to generate structured ad response');
@@ -222,5 +190,4 @@ Return ONLY a JSON object with the following structure:
       headlineA: headlineData.headlineA,
       headlineB: headlineData.headlineB
     };
-  }
-);
+}

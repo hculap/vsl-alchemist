@@ -1,9 +1,6 @@
-import { defineAction } from '@genkit-ai/core';
-import { generate } from '@genkit-ai/ai';
-import { registry } from '../lib/genkit';
 import { BusinessProfileSchema } from '../types';
 import { z } from 'zod';
-import { LANGUAGE_PROMPTS, DEFAULT_MODEL } from '../lib/models';
+import { LANGUAGE_PROMPTS, DEFAULT_MODEL, generateWithOpenAI } from '../lib/models';
 
 const TitleGenerationInputSchema = z.object({
   businessProfile: BusinessProfileSchema
@@ -22,15 +19,7 @@ const StructuredTitleResponseSchema = z.object({
 /**
  * Title Generation Flow - Creates compelling VSL titles based on business profile
  */
-export const generateTitlesFlow = defineAction(
-  registry,
-  {
-    name: 'generateTitlesFlow',
-    inputSchema: TitleGenerationInputSchema,
-    outputSchema: TitleGenerationOutputSchema,
-    actionType: 'flow'
-  },
-  async (input) => {
+export async function generateTitlesFlow(input: z.infer<typeof TitleGenerationInputSchema>): Promise<z.infer<typeof TitleGenerationOutputSchema>> {
     const { businessProfile } = input;
     const selectedLanguage = (businessProfile.language || 'pl') as keyof typeof LANGUAGE_PROMPTS;
     const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['pl'];
@@ -85,26 +74,13 @@ Generate exactly 6 unique, compelling, and practical titles. Return ONLY a JSON 
 }
 `;
 
-    const response = await generate(
-      registry,
-      {
-        model: DEFAULT_MODEL,
-        prompt: titlePrompt,
-        config: { 
-          temperature: 0.8,
-          maxOutputTokens: 1000 // Increased
-        },
-        output: {
-          schema: StructuredTitleResponseSchema
-        }
-      }
-    ).catch(error => {
-      console.error('Title generation failed:', error.message);
-      throw new Error(`Title generation failed: ${error.message}`);
-    });
-
-    // Parse the structured response
-    const structuredData = response.output;
+    const structuredData = await generateWithOpenAI<z.infer<typeof StructuredTitleResponseSchema>>(
+      titlePrompt,
+      StructuredTitleResponseSchema,
+      DEFAULT_MODEL,
+      0.8,
+      1000
+    );
     
     if (!structuredData || !structuredData.titles) {
       throw new Error('Failed to generate structured title response');
@@ -113,5 +89,4 @@ Generate exactly 6 unique, compelling, and practical titles. Return ONLY a JSON 
     return {
       titles: structuredData.titles
     };
-  }
-);
+}

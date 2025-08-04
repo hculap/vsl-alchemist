@@ -1,9 +1,6 @@
-import { defineAction } from '@genkit-ai/core';
-import { generate } from '@genkit-ai/ai';
-import { registry } from '../lib/genkit';
 import { CampaignInputSchema, VslOutputSchema } from '../types';
 import { z } from 'zod';
-import { LANGUAGE_PROMPTS, DEFAULT_MODEL } from '../lib/models';
+import { LANGUAGE_PROMPTS, DEFAULT_MODEL, generateWithOpenAI } from '../lib/models';
 
 // Schema for structured VSL generation - shorter version
 const StructuredVslResponseSchema = z.object({
@@ -23,15 +20,7 @@ const StructuredVslResponseSchema = z.object({
  * VSL Generation Flow - Creates two versions of complete VSL scripts
  * following proven conversion frameworks (3-4 minutes)
  */
-export const generateVslFlow = defineAction(
-  registry,
-  {
-    name: 'generateVslFlow',
-    inputSchema: CampaignInputSchema,
-    outputSchema: VslOutputSchema,
-    actionType: 'flow'
-  },
-  async (input) => {
+export async function generateVslFlow(input: z.infer<typeof CampaignInputSchema>): Promise<z.infer<typeof VslOutputSchema>> {
     const { businessProfile, vslTitle, language } = input;
     const selectedLanguage = (language || businessProfile.language || 'pl') as keyof typeof LANGUAGE_PROMPTS;
     const languagePrompt = LANGUAGE_PROMPTS[selectedLanguage] || LANGUAGE_PROMPTS['pl'];
@@ -92,46 +81,28 @@ Return ONLY a JSON object with the following structure:
 `;
 
     // Generate two different versions for A/B testing
-    const [responseA, responseB] = await Promise.all([
-      generate(
-        registry,
-        {
-          model: DEFAULT_MODEL,
-          prompt: vslPrompt + "\n\nCreate VERSION A with emphasis on transformation and results:",
-          config: { 
-            temperature: 0.8,
-            maxOutputTokens: 2000 // Increased
-          },
-          output: {
-            schema: StructuredVslResponseSchema
-          }
-        }
+    const [vslDataA, vslDataB] = await Promise.all([
+      generateWithOpenAI<z.infer<typeof StructuredVslResponseSchema>>(
+        vslPrompt + "\n\nCreate VERSION A with emphasis on transformation and results:",
+        StructuredVslResponseSchema,
+        DEFAULT_MODEL,
+        0.8,
+        2000
       ).catch(error => {
         console.error('VSL Version A generation failed:', error.message);
         throw new Error(`VSL Version A generation failed: ${error.message}`);
       }),
-      generate(
-        registry,
-        {
-          model: DEFAULT_MODEL, 
-          prompt: vslPrompt + "\n\nCreate VERSION B with emphasis on methodology and expertise:",
-          config: { 
-            temperature: 0.8,
-            maxOutputTokens: 2000 // Increased
-          },
-          output: {
-            schema: StructuredVslResponseSchema
-          }
-        }
+      generateWithOpenAI<z.infer<typeof StructuredVslResponseSchema>>(
+        vslPrompt + "\n\nCreate VERSION B with emphasis on methodology and expertise:",
+        StructuredVslResponseSchema,
+        DEFAULT_MODEL,
+        0.8,
+        2000
       ).catch(error => {
         console.error('VSL Version B generation failed:', error.message);
         throw new Error(`VSL Version B generation failed: ${error.message}`);
       })
     ]);
-
-    // Parse the structured responses
-    const vslDataA = responseA.output;
-    const vslDataB = responseB.output;
 
     if (!vslDataA?.vslScript || !vslDataB?.vslScript) {
       throw new Error('Failed to generate structured VSL response');
@@ -195,5 +166,4 @@ ${vslData.vslScript.callToAction}
       vslScriptA: formatVslScript(vslDataA),
       vslScriptB: formatVslScript(vslDataB)
     };
-  }
-);
+}
