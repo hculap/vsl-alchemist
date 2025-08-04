@@ -71,7 +71,9 @@ export async function initializeDatabase(): Promise<boolean> {
         ad_copy_b TEXT,
         headline_a VARCHAR(255),
         headline_b VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        language VARCHAR(10) DEFAULT 'en',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
     
@@ -80,6 +82,7 @@ export async function initializeDatabase(): Promise<boolean> {
     await pool.query('CREATE INDEX IF NOT EXISTS idx_business_profiles_user_id ON business_profiles(user_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_campaigns_user_id ON campaigns(user_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_campaigns_business_profile_id ON campaigns(business_profile_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_campaigns_language ON campaigns(language)');
     
     // Create updated_at trigger function
     await pool.query(`
@@ -92,7 +95,7 @@ export async function initializeDatabase(): Promise<boolean> {
       $$ language 'plpgsql'
     `);
     
-    // Create trigger for business_profiles
+    // Create triggers for updated_at columns
     await pool.query(`
       DROP TRIGGER IF EXISTS update_business_profiles_updated_at ON business_profiles;
       CREATE TRIGGER update_business_profiles_updated_at 
@@ -101,10 +104,22 @@ export async function initializeDatabase(): Promise<boolean> {
           EXECUTE FUNCTION update_updated_at_column()
     `);
     
+    await pool.query(`
+      DROP TRIGGER IF EXISTS update_campaigns_updated_at ON campaigns;
+      CREATE TRIGGER update_campaigns_updated_at 
+          BEFORE UPDATE ON campaigns 
+          FOR EACH ROW 
+          EXECUTE FUNCTION update_updated_at_column()
+    `);
+    
     console.log('✅ Database schema initialized successfully');
+    console.log('📋 Tables created: users, business_profiles, campaigns');
+    console.log('📊 Indexes created: email, user_id, business_profile_id, language');
+    console.log('🔧 Triggers created: updated_at for business_profiles and campaigns');
     return true;
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
+    console.error('🔍 Error details:', error.message);
     return false;
   }
 }

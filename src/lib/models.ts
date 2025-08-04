@@ -457,8 +457,8 @@ export async function createCampaign(
         user_id, business_profile_id, vsl_title, 
         vsl_script_a, vsl_script_b, 
         video_scripts, ad_copy_a, ad_copy_b, 
-        headline_a, headline_b
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+        headline_a, headline_b, language
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
       RETURNING id`,
       [
         userId,
@@ -470,7 +470,8 @@ export async function createCampaign(
         campaignData.ads.adCopyA,
         campaignData.ads.adCopyB,
         campaignData.ads.headlineA,
-        campaignData.ads.headlineB
+        campaignData.ads.headlineB,
+        campaignData.metadata?.language || 'en'
       ]
     );
     return result.rows[0];
