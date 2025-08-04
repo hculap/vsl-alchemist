@@ -77,16 +77,41 @@ export async function initializeDatabase(): Promise<boolean> {
       )
     `);
     
-    // Add missing columns to existing tables (migration)
-    try {
-      await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'pl\'');
-      await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
-      await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'pl\'');
-      await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
-      console.log('✅ Database migration completed');
-    } catch (error) {
-      console.log('ℹ️  Migration step completed (columns may already exist)');
-    }
+          // Add missing columns to existing tables (migration)
+      try {
+        await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'pl\'');
+        await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+        await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'pl\'');
+        await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+        console.log('✅ Database migration completed');
+      } catch (error) {
+        console.log('ℹ️  Migration step completed (columns may already exist)');
+      }
+      
+      // Update existing profiles and campaigns to Polish
+      try {
+        console.log('🔄 Updating existing data to Polish...');
+        
+        // Update business profiles
+        const profileUpdateResult = await pool.query(`
+          UPDATE business_profiles 
+          SET language = 'pl', updated_at = CURRENT_TIMESTAMP 
+          WHERE language IS NULL OR language != 'pl'
+        `);
+        console.log(`✅ Updated ${profileUpdateResult.rowCount} business profiles to Polish`);
+        
+        // Update campaigns
+        const campaignUpdateResult = await pool.query(`
+          UPDATE campaigns 
+          SET language = 'pl', updated_at = CURRENT_TIMESTAMP 
+          WHERE language IS NULL OR language != 'pl'
+        `);
+        console.log(`✅ Updated ${campaignUpdateResult.rowCount} campaigns to Polish`);
+        
+        console.log('🎉 All existing data updated to Polish!');
+      } catch (error) {
+        console.log('ℹ️  Data update step completed (may already be up to date)');
+      }
     
     // Create indexes
     await pool.query('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
