@@ -88,14 +88,14 @@ class VSLAlchemist {
                 this.token = data.token;
                 this.user = data.user;
                 localStorage.setItem('token', this.token);
-                this.showAlert('Login successful!', 'success');
+                this.showAlert('Logowanie pomyślne!', 'success');
                 this.hideAuth();
                 this.loadDashboard();
             } else {
-                this.showAlert(data.error || 'Login failed', 'error');
+                this.showAlert(data.error || 'Logowanie nie powiodło się', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Login error:', error);
         }
     }
@@ -120,14 +120,14 @@ class VSLAlchemist {
                 this.token = data.token;
                 this.user = data.user;
                 localStorage.setItem('token', this.token);
-                this.showAlert('Account created successfully!', 'success');
+                this.showAlert('Konto utworzone pomyślnie!', 'success');
                 this.hideAuth();
                 this.loadDashboard();
             } else {
-                this.showAlert(data.error || 'Registration failed', 'error');
+                this.showAlert(data.error || 'Rejestracja nie powiodła się', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Signup error:', error);
         }
     }
@@ -159,8 +159,8 @@ class VSLAlchemist {
                         <h2>🧪 VSL-Alchemist</h2>
                     </div>
                     <div class="nav-links">
-                        <span>Welcome, ${this.user?.email || 'User'}!</span>
-                        <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                        <span>Witaj, ${this.user?.email || 'Użytkowniku'}!</span>
+                        <button id="logoutBtn" class="btn btn-outline">Wyloguj się</button>
                     </div>
                 </div>
             </nav>
@@ -168,109 +168,109 @@ class VSLAlchemist {
             <div class="dashboard">
                 <div class="container">
                     <div class="dashboard-header">
-                        <h1>Dashboard</h1>
-                        <button id="newCampaignBtn" class="btn btn-primary">New Campaign</button>
+                        <h1>Panel Sterowania</h1>
+                        <button id="newCampaignBtn" class="btn btn-primary">Nowa Kampania</button>
                     </div>
 
                     <div class="dashboard-nav">
-                        <button class="tab-btn active" data-tab="profiles">Business Profiles</button>
-                        <button class="tab-btn" data-tab="campaigns">Campaigns</button>
+                        <button class="tab-btn active" data-tab="profiles">Profile Biznesowe</button>
+                        <button class="tab-btn" data-tab="campaigns">Kampanie</button>
                     </div>
 
                     <div id="profiles-tab" class="tab-content active">
                         <div class="card">
-                            <h3>Create Business Profile</h3>
+                            <h3>Utwórz Profil Biznesowy</h3>
                             <form id="profileForm">
                                 <div class="form-group">
-                                    <textarea id="offer" placeholder="Describe your high-ticket offer..." required></textarea>
+                                    <textarea id="offer" placeholder="Opisz swoją premium ofertę..." required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <textarea id="avatar" placeholder="Describe your ideal client avatar..." required></textarea>
+                                    <textarea id="avatar" placeholder="Opisz swojego idealnego klienta..." required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <textarea id="problems" placeholder="What problems do your clients face?" required></textarea>
+                                    <textarea id="problems" placeholder="Jakie problemy mają Twoi klienci?" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <textarea id="desires" placeholder="What do your clients desire most?" required></textarea>
+                                    <textarea id="desires" placeholder="Czego najbardziej pragną Twoi klienci?" required></textarea>
                                 </div>
                                 <div class="form-group">
                                     <select id="tone" required>
-                                        <option value="">Select brand tone</option>
-                                        <option value="Professional">Professional</option>
-                                        <option value="Funny">Funny</option>
-                                        <option value="Inspiring">Inspiring</option>
-                                        <option value="Direct">Direct</option>
+                                        <option value="">Wybierz ton marki</option>
+                                        <option value="Professional">Profesjonalny</option>
+                                        <option value="Funny">Zabawny</option>
+                                        <option value="Inspiring">Inspirujący</option>
+                                        <option value="Direct">Bezpośredni</option>
                                     </select>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Save Profile</button>
+                                <button type="submit" class="btn btn-primary">Zapisz Profil</button>
                             </form>
                         </div>
 
                         <div class="card">
-                            <h3>Your Business Profiles</h3>
+                            <h3>Twoje Profile Biznesowe</h3>
                             <div id="profilesList" class="loading">
                                 <div class="spinner"></div>
-                                Loading profiles...
+                                Ładowanie profili...
                             </div>
                         </div>
                     </div>
 
                     <div id="campaigns-tab" class="tab-content">
                         <div class="card">
-                            <h3>Generate New Campaign</h3>
+                            <h3>Wygeneruj Nową Kampanię</h3>
                             <form id="campaignForm">
                                 <div class="form-group">
                                     <select id="campaignProfile" required>
-                                        <option value="">Select business profile</option>
+                                        <option value="">Wybierz profil biznesowy</option>
                                     </select>
                                 </div>
                                 
                                 <div class="form-group">
                                     <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.5rem;">
-                                        <label style="font-weight: 600;">VSL Title:</label>
+                                        <label style="font-weight: 600;">Tytuł VSL:</label>
                                         <button type="button" id="generateTitlesBtn" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                            ✨ Generate Ideas
+                                            ✨ Generuj Pomysły
                                         </button>
                                     </div>
-                                    <input type="text" id="vslTitle" placeholder="Enter your VSL title or generate suggestions above" required>
+                                    <input type="text" id="vslTitle" placeholder="Wprowadź tytuł VSL lub wygeneruj sugestie powyżej" required>
                                     <small style="color: #666; font-size: 0.9rem; margin-top: 0.25rem; display: block;">
-                                        💡 Tip: Use the "Generate Ideas" button to get AI-powered title suggestions
+                                        💡 Wskazówka: Użyj przycisku "Generuj Pomysły" aby otrzymać sugestie tytułów napędzane AI
                                     </small>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="campaignLanguage" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Language:</label>
+                                    <label for="campaignLanguage" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Język:</label>
                                     <select id="campaignLanguage">
-                                        <option value="">Auto-detect from profile</option>
+                                        <option value="">Auto-wykryj z profilu</option>
                                     </select>
-                                    <small style="color: #666; font-size: 0.9rem;">The system will automatically detect the language from your business profile, or you can override it here.</small>
+                                    <small style="color: #666; font-size: 0.9rem;">System automatycznie wykryje język z Twojego profilu biznesowego, lub możesz go nadpisać tutaj.</small>
                                 </div>
 
                                 <div id="titleSuggestions" style="display: none; margin-bottom: 1.5rem;">
-                                    <h4 style="margin-bottom: 1rem; color: var(--primary-color);">💡 AI-Generated Title Suggestions:</h4>
-                                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Click "Use This" to select a title, then scroll down to generate your campaign.</p>
+                                    <h4 style="margin-bottom: 1rem; color: var(--primary-color);">💡 Sugestie Tytułów Wygenerowane przez AI:</h4>
+                                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Kliknij "Użyj Tego" aby wybrać tytuł, następnie przewiń w dół aby wygenerować kampanię.</p>
                                     <div id="titlesList" class="titles-grid"></div>
                                     <div style="text-align: center; margin-top: 1rem;">
                                         <button type="button" class="btn btn-outline" onclick="app.handleGenerateTitles()">
-                                            🔄 Generate More Ideas
+                                            🔄 Generuj Więcej Pomysłów
                                         </button>
                                     </div>
                                 </div>
                                 
                                 <div class="form-actions">
-                                    <button type="submit" class="btn btn-primary btn-large">🚀 Generate Campaign</button>
+                                    <button type="submit" class="btn btn-primary btn-large">🚀 Wygeneruj Kampanię</button>
                                     <small style="color: #666; font-size: 0.9rem; margin-top: 0.5rem; display: block;">
-                                        This will create VSL scripts, video ads, ad copy, and headlines in your selected language.
+                                        To utworzy skrypty VSL, reklamy wideo, kopię reklamową i nagłówki w wybranym języku.
                                     </small>
                                 </div>
                             </form>
                         </div>
 
                         <div class="card">
-                            <h3>Your Campaigns</h3>
+                            <h3>Twoje Kampanie</h3>
                             <div id="campaignsList" class="loading">
                                 <div class="spinner"></div>
-                                Loading campaigns...
+                                Ładowanie kampanii...
                             </div>
                         </div>
                     </div>
@@ -346,7 +346,7 @@ class VSLAlchemist {
         const select = document.getElementById('campaignLanguage');
         if (!select || !this.availableLanguages) return;
 
-        select.innerHTML = '<option value="">Auto-detect from profile</option>' +
+        select.innerHTML = '<option value="">Auto-wykryj z profilu</option>' +
             this.availableLanguages.map(lang => `
                 <option value="${lang.code}">${lang.name}</option>
             `).join('');
@@ -365,11 +365,11 @@ class VSLAlchemist {
                 this.displayProfiles(data.profiles);
                 this.populateProfileSelect(data.profiles);
             } else {
-                document.getElementById('profilesList').innerHTML = '<p>No profiles found.</p>';
+                document.getElementById('profilesList').innerHTML = '<p>Nie znaleziono profili.</p>';
             }
         } catch (error) {
             console.error('Load profiles error:', error);
-            document.getElementById('profilesList').innerHTML = '<p>Error loading profiles.</p>';
+            document.getElementById('profilesList').innerHTML = '<p>Błąd ładowania profili.</p>';
         }
     }
 
@@ -385,18 +385,18 @@ class VSLAlchemist {
                 const data = await response.json();
                 this.displayCampaigns(data.campaigns);
             } else {
-                document.getElementById('campaignsList').innerHTML = '<p>No campaigns found.</p>';
+                document.getElementById('campaignsList').innerHTML = '<p>Nie znaleziono kampanii.</p>';
             }
         } catch (error) {
             console.error('Load campaigns error:', error);
-            document.getElementById('campaignsList').innerHTML = '<p>Error loading campaigns.</p>';
+            document.getElementById('campaignsList').innerHTML = '<p>Błąd ładowania kampanii.</p>';
         }
     }
 
     displayProfiles(profiles) {
         const container = document.getElementById('profilesList');
         if (profiles.length === 0) {
-            container.innerHTML = '<p>No business profiles yet. Create one above!</p>';
+            container.innerHTML = '<p>Brak profili biznesowych. Utwórz jeden powyżej!</p>';
             return;
         }
 
@@ -405,11 +405,11 @@ class VSLAlchemist {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Offer</th>
-                            <th>Tone</th>
-                            <th>Language</th>
-                            <th>Created</th>
-                            <th>Actions</th>
+                            <th>Oferta</th>
+                            <th>Ton</th>
+                            <th>Język</th>
+                            <th>Utworzono</th>
+                            <th>Akcje</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -425,8 +425,8 @@ class VSLAlchemist {
                                 <td><span class="language-badge">${this.getLanguageName(profile.language)}</span></td>
                                 <td>${new Date(profile.created_at).toLocaleDateString()}</td>
                                 <td>
-                                    <button class="btn-small btn-outline" onclick="app.editProfile(${profile.id})">✏️ Edit</button>
-                                    <button class="btn-small btn-danger" onclick="app.deleteProfile(${profile.id})">🗑️ Delete</button>
+                                    <button class="btn-small btn-outline" onclick="app.editProfile(${profile.id})">✏️ Edytuj</button>
+                                    <button class="btn-small btn-danger" onclick="app.deleteProfile(${profile.id})">🗑️ Usuń</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -439,7 +439,7 @@ class VSLAlchemist {
     displayCampaigns(campaigns) {
         const container = document.getElementById('campaignsList');
         if (campaigns.length === 0) {
-            container.innerHTML = '<p>No campaigns yet. Generate one above!</p>';
+            container.innerHTML = '<p>Brak kampanii. Wygeneruj jedną powyżej!</p>';
             return;
         }
 
@@ -448,10 +448,10 @@ class VSLAlchemist {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Campaign Title</th>
-                            <th>Language</th>
-                            <th>Created</th>
-                            <th>Actions</th>
+                            <th>Tytuł Kampanii</th>
+                            <th>Język</th>
+                            <th>Utworzono</th>
+                            <th>Akcje</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -460,15 +460,15 @@ class VSLAlchemist {
                                 <td>
                                     <div class="campaign-cell">
                                         <strong>${campaign.title}</strong>
-                                        <small>${campaign.content ? 'Content generated' : 'No content'}</small>
+                                        <small>${campaign.content ? 'Treść wygenerowana' : 'Brak treści'}</small>
                                     </div>
                                 </td>
                                 <td><span class="language-badge">${this.getLanguageName(campaign.language || 'en')}</span></td>
                                 <td>${new Date(campaign.created_at).toLocaleDateString()}</td>
                                 <td>
-                                    <button class="btn-small btn-primary" onclick="app.viewCampaign(${campaign.id})">👁️ View</button>
-                                    <button class="btn-small btn-outline" onclick="app.exportCampaign(${campaign.id})">📥 Export</button>
-                                    <button class="btn-small btn-danger" onclick="app.deleteCampaign(${campaign.id})">🗑️ Delete</button>
+                                    <button class="btn-small btn-primary" onclick="app.viewCampaign(${campaign.id})">👁️ Zobacz</button>
+                                    <button class="btn-small btn-outline" onclick="app.exportCampaign(${campaign.id})">📥 Eksportuj</button>
+                                    <button class="btn-small btn-danger" onclick="app.deleteCampaign(${campaign.id})">🗑️ Usuń</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -480,20 +480,20 @@ class VSLAlchemist {
 
     getLanguageName(code) {
         const languageNames = {
-            'en': 'English',
-            'pl': 'Polish', 
-            'es': 'Spanish',
-            'fr': 'French',
-            'de': 'German'
+            'en': 'Angielski',
+            'pl': 'Polski', 
+            'es': 'Hiszpański',
+            'fr': 'Francuski',
+            'de': 'Niemiecki'
         };
-        return languageNames[code] || 'English';
+        return languageNames[code] || 'Angielski';
     }
 
     populateProfileSelect(profiles) {
         const select = document.getElementById('campaignProfile');
         if (!select) return;
 
-        select.innerHTML = '<option value="">Select business profile</option>' +
+        select.innerHTML = '<option value="">Wybierz profil biznesowy</option>' +
             profiles.map(profile => `
                 <option value="${profile.id}">${profile.offer.substring(0, 50)}...</option>
             `).join('');
@@ -520,15 +520,15 @@ class VSLAlchemist {
             });
 
             if (response.ok) {
-                this.showAlert('Business profile created successfully!', 'success');
+                this.showAlert('Profil biznesowy utworzony pomyślnie!', 'success');
                 document.getElementById('profileForm').reset();
                 this.loadProfiles();
             } else {
                 const data = await response.json();
-                this.showAlert(data.error || 'Failed to create profile', 'error');
+                this.showAlert(data.error || 'Nie udało się utworzyć profilu', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Create profile error:', error);
         }
     }
@@ -538,13 +538,13 @@ class VSLAlchemist {
         const businessProfileId = parseInt(profileSelect.value);
         
         if (!businessProfileId) {
-            this.showAlert('Please select a business profile first', 'warning');
+            this.showAlert('Proszę najpierw wybrać profil biznesowy', 'warning');
             return;
         }
 
         const generateBtn = document.getElementById('generateTitlesBtn');
         const originalText = generateBtn.textContent;
-        generateBtn.textContent = '🔄 Generating...';
+        generateBtn.textContent = '🔄 Generowanie...';
         generateBtn.disabled = true;
 
         try {
@@ -560,13 +560,13 @@ class VSLAlchemist {
             if (response.ok) {
                 const data = await response.json();
                 this.displayTitleSuggestions(data.titles);
-                this.showAlert('Title suggestions generated! Select one to continue.', 'success');
+                this.showAlert('Sugestie tytułów wygenerowane! Wybierz jeden aby kontynuować.', 'success');
             } else {
                 const data = await response.json();
-                this.showAlert(data.error || 'Failed to generate titles', 'error');
+                this.showAlert(data.error || 'Nie udało się wygenerować tytułów', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Generate titles error:', error);
         } finally {
             generateBtn.textContent = originalText;
@@ -583,7 +583,7 @@ class VSLAlchemist {
                 <div class="title-content">
                     <span class="title-text">${title}</span>
                     <div class="title-actions">
-                        <button class="btn-small btn-primary" onclick="app.selectTitle('${title.replace(/'/g, "\\'")}')">✓ Use This</button>
+                        <button class="btn-small btn-primary" onclick="app.selectTitle('${title.replace(/'/g, "\\'")}')">✓ Użyj Tego</button>
                     </div>
                 </div>
             </div>
@@ -594,7 +594,7 @@ class VSLAlchemist {
 
     selectTitle(title) {
         document.getElementById('vslTitle').value = title;
-        this.showAlert('Title selected! You can now generate your campaign.', 'success');
+        this.showAlert('Tytuł wybrany! Możesz teraz wygenerować swoją kampanię.', 'success');
         
         // Hide the suggestions after selection
         document.getElementById('titleSuggestions').style.display = 'none';
@@ -619,7 +619,7 @@ class VSLAlchemist {
 
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Generating...';
+        submitBtn.textContent = 'Generowanie...';
         submitBtn.disabled = true;
 
         try {
@@ -634,16 +634,16 @@ class VSLAlchemist {
 
             if (response.ok) {
                 const data = await response.json();
-                this.showAlert('Campaign generated successfully!', 'success');
+                this.showAlert('Kampania wygenerowana pomyślnie!', 'success');
                 document.getElementById('campaignForm').reset();
                 this.loadCampaigns();
                 this.viewCampaignData(data.campaign);
             } else {
                 const data = await response.json();
-                this.showAlert(data.error || 'Failed to generate campaign', 'error');
+                this.showAlert(data.error || 'Nie udało się wygenerować kampanii', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Generate campaign error:', error);
         } finally {
             submitBtn.textContent = originalText;
@@ -663,10 +663,10 @@ class VSLAlchemist {
                 const data = await response.json();
                 this.viewCampaignData(data.campaign);
             } else {
-                this.showAlert('Failed to load campaign details', 'error');
+                this.showAlert('Nie udało się załadować szczegółów kampanii', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('View campaign error:', error);
         }
     }
@@ -697,10 +697,10 @@ class VSLAlchemist {
                     
                     <div class="campaign-sections">
                         <div class="section">
-                            <h2 class="section-title">📝 VSL Scripts</h2>
+                            <h2 class="section-title">📝 Skrypty VSL</h2>
                             <div class="version-tabs">
-                                <button class="version-tab active" onclick="app.switchVersion('vsl-a')">Version A</button>
-                                <button class="version-tab" onclick="app.switchVersion('vsl-b')">Version B</button>
+                                <button class="version-tab active" onclick="app.switchVersion('vsl-a')">Wersja A</button>
+                                <button class="version-tab" onclick="app.switchVersion('vsl-b')">Wersja B</button>
                             </div>
                             <div id="vsl-a" class="version-content active">
                                 <div class="markdown-content">${marked.parse(campaign.vsl.vslScriptA)}</div>
@@ -711,11 +711,11 @@ class VSLAlchemist {
                         </div>
 
                         <div class="section">
-                            <h2 class="section-title">🎬 Video Ad Scripts</h2>
+                            <h2 class="section-title">🎬 Skrypty Reklam Wideo</h2>
                             <div class="scripts-grid">
                                 ${campaign.ads.videoScripts.map((script, i) => `
                                     <div class="script-card">
-                                        <h4 class="script-title">Video Script ${i + 1}</h4>
+                                        <h4 class="script-title">Skrypt Wideo ${i + 1}</h4>
                                         <div class="markdown-content">${marked.parse(script)}</div>
                                     </div>
                                 `).join('')}
@@ -723,10 +723,10 @@ class VSLAlchemist {
                         </div>
 
                         <div class="section">
-                            <h2 class="section-title">✍️ Ad Copy</h2>
+                            <h2 class="section-title">✍️ Kopia Reklamowa</h2>
                             <div class="version-tabs">
-                                <button class="version-tab active" onclick="app.switchVersion('copy-a')">Version A</button>
-                                <button class="version-tab" onclick="app.switchVersion('copy-b')">Version B</button>
+                                <button class="version-tab active" onclick="app.switchVersion('copy-a')">Wersja A</button>
+                                <button class="version-tab" onclick="app.switchVersion('copy-b')">Wersja B</button>
                             </div>
                             <div id="copy-a" class="version-content active">
                                 <div class="markdown-content">${marked.parse(campaign.ads.adCopyA)}</div>
@@ -737,14 +737,14 @@ class VSLAlchemist {
                         </div>
 
                         <div class="section">
-                            <h2 class="section-title">🎯 Headlines</h2>
+                            <h2 class="section-title">🎯 Nagłówki</h2>
                             <div class="headlines-grid">
                                 <div class="headline-card">
-                                    <h4>Headline A</h4>
+                                    <h4>Nagłówek A</h4>
                                     <div class="headline-text">${campaign.ads.headlineA}</div>
                                 </div>
                                 <div class="headline-card">
-                                    <h4>Headline B</h4>
+                                    <h4>Nagłówek B</h4>
                                     <div class="headline-text">${campaign.ads.headlineB}</div>
                                 </div>
                             </div>
@@ -752,8 +752,8 @@ class VSLAlchemist {
                     </div>
 
                     <div class="campaign-actions">
-                        <button class="btn btn-primary" onclick="app.exportCampaign(${campaign.id})">📥 Export Campaign</button>
-                        <button class="btn btn-outline" onclick="app.copyToClipboard()">📋 Copy All</button>
+                        <button class="btn btn-primary" onclick="app.exportCampaign(${campaign.id})">📥 Eksportuj Kampanię</button>
+                        <button class="btn btn-outline" onclick="app.copyToClipboard()">📋 Skopiuj Wszystko</button>
                     </div>
                 </div>
             </div>
@@ -795,12 +795,12 @@ class VSLAlchemist {
                 a.download = `campaign-${campaignId}.json`;
                 a.click();
                 window.URL.revokeObjectURL(url);
-                this.showAlert('Campaign exported successfully!', 'success');
+                this.showAlert('Kampania wyeksportowana pomyślnie!', 'success');
             } else {
-                this.showAlert('Failed to export campaign', 'error');
+                this.showAlert('Nie udało się wyeksportować kampanii', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Export campaign error:', error);
         }
     }
@@ -808,9 +808,9 @@ class VSLAlchemist {
     copyToClipboard() {
         const content = document.querySelector('.campaign-content').innerText;
         navigator.clipboard.writeText(content).then(() => {
-            this.showAlert('Campaign content copied to clipboard!', 'success');
+            this.showAlert('Treść kampanii skopiowana do schowka!', 'success');
         }).catch(() => {
-            this.showAlert('Failed to copy to clipboard', 'error');
+            this.showAlert('Nie udało się skopiować do schowka', 'error');
         });
     }
 
@@ -844,10 +844,10 @@ class VSLAlchemist {
                 const data = await response.json();
                 this.showEditProfileModal(data.profile);
             } else {
-                this.showAlert('Failed to load profile for editing', 'error');
+                this.showAlert('Nie udało się załadować profilu do edycji', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Edit profile error:', error);
         }
     }
@@ -860,36 +860,36 @@ class VSLAlchemist {
             <div class="modal-content" style="max-width: 600px;">
                 <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
                 <div style="padding: 2rem;">
-                    <h2>Edit Business Profile</h2>
+                    <h2>Edytuj Profil Biznesowy</h2>
                     <form id="editProfileForm">
                         <div class="form-group">
-                            <label>Offer</label>
+                            <label>Oferta</label>
                             <textarea id="editOffer" required>${profile.offer}</textarea>
                         </div>
                         <div class="form-group">
-                            <label>Target Avatar</label>
+                            <label>Avatar Docelowy</label>
                             <textarea id="editAvatar" required>${profile.avatar}</textarea>
                         </div>
                         <div class="form-group">
-                            <label>Problems</label>
+                            <label>Problemy</label>
                             <textarea id="editProblems" required>${profile.problems}</textarea>
                         </div>
                         <div class="form-group">
-                            <label>Desires</label>
+                            <label>Pragnienia</label>
                             <textarea id="editDesires" required>${profile.desires}</textarea>
                         </div>
                         <div class="form-group">
-                            <label>Tone</label>
+                            <label>Ton</label>
                             <select id="editTone" required>
-                                <option value="Professional" ${profile.tone === 'Professional' ? 'selected' : ''}>Professional</option>
-                                <option value="Funny" ${profile.tone === 'Funny' ? 'selected' : ''}>Funny</option>
-                                <option value="Inspiring" ${profile.tone === 'Inspiring' ? 'selected' : ''}>Inspiring</option>
-                                <option value="Direct" ${profile.tone === 'Direct' ? 'selected' : ''}>Direct</option>
+                                <option value="Professional" ${profile.tone === 'Professional' ? 'selected' : ''}>Profesjonalny</option>
+                                <option value="Funny" ${profile.tone === 'Funny' ? 'selected' : ''}>Zabawny</option>
+                                <option value="Inspiring" ${profile.tone === 'Inspiring' ? 'selected' : ''}>Inspirujący</option>
+                                <option value="Direct" ${profile.tone === 'Direct' ? 'selected' : ''}>Bezpośredni</option>
                             </select>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <button type="button" class="btn btn-outline" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
+                            <button type="button" class="btn btn-outline" onclick="this.closest('.modal').remove()">Anuluj</button>
                         </div>
                     </form>
                 </div>
@@ -922,21 +922,21 @@ class VSLAlchemist {
             });
 
             if (response.ok) {
-                this.showAlert('Profile updated successfully!', 'success');
+                this.showAlert('Profil zaktualizowany pomyślnie!', 'success');
                 document.querySelector('.modal').remove();
                 this.loadProfiles();
             } else {
                 const data = await response.json();
-                this.showAlert(data.error || 'Failed to update profile', 'error');
+                this.showAlert(data.error || 'Nie udało się zaktualizować profilu', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Update profile error:', error);
         }
     }
 
     async deleteProfile(profileId) {
-        if (!confirm('Are you sure you want to delete this business profile? This action cannot be undone.')) {
+        if (!confirm('Czy na pewno chcesz usunąć ten profil biznesowy? Tej akcji nie można cofnąć.')) {
             return;
         }
 
@@ -949,20 +949,20 @@ class VSLAlchemist {
             });
 
             if (response.ok) {
-                this.showAlert('Profile deleted successfully!', 'success');
+                this.showAlert('Profil usunięty pomyślnie!', 'success');
                 this.loadProfiles();
             } else {
                 const data = await response.json();
-                this.showAlert(data.error || 'Failed to delete profile', 'error');
+                this.showAlert(data.error || 'Nie udało się usunąć profilu', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Delete profile error:', error);
         }
     }
 
     async deleteCampaign(campaignId) {
-        if (!confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
+        if (!confirm('Czy na pewno chcesz usunąć tę kampanię? Tej akcji nie można cofnąć.')) {
             return;
         }
 
@@ -975,14 +975,14 @@ class VSLAlchemist {
             });
 
             if (response.ok) {
-                this.showAlert('Campaign deleted successfully!', 'success');
+                this.showAlert('Kampania usunięta pomyślnie!', 'success');
                 this.loadCampaigns();
             } else {
                 const data = await response.json();
-                this.showAlert(data.error || 'Failed to delete campaign', 'error');
+                this.showAlert(data.error || 'Nie udało się usunąć kampanii', 'error');
             }
         } catch (error) {
-            this.showAlert('Network error. Please try again.', 'error');
+            this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Delete campaign error:', error);
         }
     }
