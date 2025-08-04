@@ -57,7 +57,15 @@ fi
 # Build and start the services
 echo ""
 echo "🔨 Building and starting services..."
-docker-compose up --build -d
+
+# Check if development mode is requested
+if [ "$1" = "--dev" ]; then
+    echo "🚀 Starting in DEVELOPMENT mode..."
+    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+else
+    echo "🚀 Starting in PRODUCTION mode..."
+    docker-compose up --build -d
+fi
 
 # Wait for services to be ready
 echo ""
@@ -115,13 +123,22 @@ echo "🔍 Health Check: http://localhost:3000/health"
 echo "🗄️  PostgreSQL: localhost:5432"
 echo ""
 echo "📋 Useful commands:"
-echo "  View logs: docker-compose logs -f"
-echo "  Stop services: docker-compose down"
-echo "  Restart services: docker-compose restart"
-echo "  View database: docker-compose exec postgres psql -U vsl_user -d vsl_alchemist"
+if [ "$1" = "--dev" ]; then
+    echo "  View logs: docker-compose -f docker-compose.yml -f docker-compose.dev.yml logs -f"
+    echo "  Stop services: docker-compose -f docker-compose.yml -f docker-compose.dev.yml down"
+    echo "  Restart services: docker-compose -f docker-compose.yml -f docker-compose.dev.yml restart"
+    echo "  View database: docker-compose exec postgres psql -U vsl_user -d vsl_alchemist"
+else
+    echo "  View logs: docker-compose logs -f"
+    echo "  Stop services: docker-compose down"
+    echo "  Restart services: docker-compose restart"
+    echo "  View database: docker-compose exec postgres psql -U vsl_user -d vsl_alchemist"
+fi
 echo ""
 echo "🔑 Database credentials:"
 echo "  Database: vsl_alchemist"
 echo "  Username: vsl_user"
 echo "  Password: vsl_password"
-echo "  Connection: postgresql://vsl_user:vsl_password@localhost:5432/vsl_alchemist" 
+echo "  Connection: postgresql://vsl_user:vsl_password@localhost:5432/vsl_alchemist"
+echo ""
+echo "💡 Development mode: ./scripts/docker-deploy.sh --dev" 
