@@ -35,8 +35,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// API info endpoint
-app.get('/', (req, res) => {
+// API info endpoint (only for /api route)
+app.get('/api', (req, res) => {
   res.json({
     name: 'VSL-Alchemist API',
     version: '1.0.0',
