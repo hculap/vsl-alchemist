@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { pool } from './lib/database';
+import { pool, initializeDatabase } from './lib/database';
 import { authRoutes } from './routes/auth';
 import { profileRoutes } from './routes/profiles';
 import campaignRoutes from './routes/campaigns';
@@ -58,6 +58,9 @@ app.listen(PORT, async () => {
     // Test database connection
     await pool.query('SELECT NOW()');
     console.log('✅ Database connection successful');
+    
+    // Initialize database schema
+    await initializeDatabase();
   } catch (error) {
     console.error('❌ Database connection failed:', error);
     console.log('💡 To set up database:');
