@@ -11,8 +11,8 @@ export const MODELS = {
   }
 } as const;
 
-// Default model selection - using OpenAI o3
-export const DEFAULT_MODEL = MODELS.OPENAI.O3;
+// Default model selection - using OpenAI GPT-4o (o3 may have availability issues)
+export const DEFAULT_MODEL = MODELS.OPENAI.GPT_4O;
 
 // Helper function for OpenAI API calls with structured output
 export async function generateWithOpenAI<T>(
@@ -21,6 +21,33 @@ export async function generateWithOpenAI<T>(
   model: string = DEFAULT_MODEL,
   temperature: number = 0.8,
   maxTokens: number = 4000
+): Promise<T> {
+  // Try with the requested model first, fallback to GPT-4o if it fails
+  const modelsToTry = model === MODELS.OPENAI.GPT_4O ? [model] : [model, MODELS.OPENAI.GPT_4O];
+  
+  for (let i = 0; i < modelsToTry.length; i++) {
+    const currentModel = modelsToTry[i];
+    try {
+      return await attemptGeneration(prompt, schema, currentModel, temperature, maxTokens);
+    } catch (error) {
+      console.error(`Model ${currentModel} failed:`, error);
+      if (i === modelsToTry.length - 1) {
+        // Last attempt failed, re-throw the error
+        throw error;
+      }
+      console.log(`Falling back to ${modelsToTry[i + 1]}...`);
+    }
+  }
+  
+  throw new Error('All models failed');
+}
+
+async function attemptGeneration<T>(
+  prompt: string,
+  schema: any,
+  model: string,
+  temperature: number,
+  maxTokens: number
 ): Promise<T> {
   try {
     // Use max_completion_tokens for o3 models, max_tokens for others
@@ -46,16 +73,44 @@ export async function generateWithOpenAI<T>(
 
     const response = await openai.chat.completions.create(requestBody);
 
+    console.log('OpenAI Response:', {
+      model: response.model,
+      choices: response.choices?.length,
+      firstChoice: response.choices[0] ? {
+        message: response.choices[0].message ? {
+          role: response.choices[0].message.role,
+          contentLength: response.choices[0].message.content?.length || 0,
+          hasContent: !!response.choices[0].message.content
+        } : null,
+        finishReason: response.choices[0].finish_reason
+      } : null
+    });
+
     const content = response.choices[0]?.message?.content;
     if (!content) {
+      console.error('Empty response from OpenAI:', {
+        response: JSON.stringify(response, null, 2),
+        requestBody: JSON.stringify(requestBody, null, 2)
+      });
       throw new Error('No response content from OpenAI');
     }
 
     // Parse and validate the JSON response
-    const parsed = JSON.parse(content);
-    return schema.parse(parsed);
+    try {
+      const parsed = JSON.parse(content);
+      return schema.parse(parsed);
+    } catch (parseError) {
+      console.error('JSON parsing failed:', {
+        content,
+        parseError: parseError instanceof Error ? parseError.message : String(parseError)
+      });
+      throw new Error(`Failed to parse OpenAI response: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+    }
   } catch (error) {
     console.error('OpenAI API call failed:', error);
+    if (error instanceof Error && error.message.includes('No response content')) {
+      throw error; // Re-throw our custom error
+    }
     throw new Error(`OpenAI generation failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
