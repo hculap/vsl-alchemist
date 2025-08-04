@@ -93,10 +93,27 @@ router.post('/generate', requireAuth, async (req: AuthRequest, res) => {
       language: campaignLanguage
     });
     
-    // Save campaign to database
+    // Save campaign to database using the correct schema
     const campaignResult = await pool.query(
-      'INSERT INTO campaigns (user_id, business_profile_id, vsl_title, content, language, created_at) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *',
-      [req.user!.id, businessProfileId, vslTitle, JSON.stringify(result), campaignLanguage]
+      `INSERT INTO campaigns (
+        user_id, business_profile_id, vsl_title, 
+        vsl_script_a, vsl_script_b, 
+        video_scripts, ad_copy_a, ad_copy_b, 
+        headline_a, headline_b, language
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      [
+        req.user!.id, 
+        businessProfileId, 
+        vslTitle, 
+        result.vsl.vslScriptA,
+        result.vsl.vslScriptB,
+        JSON.stringify(result.ads.videoScripts),
+        result.ads.adCopyA,
+        result.ads.adCopyB,
+        result.ads.headlineA,
+        result.ads.headlineB,
+        campaignLanguage
+      ]
     );
     
     res.json({ 
@@ -120,7 +137,10 @@ router.post('/generate', requireAuth, async (req: AuthRequest, res) => {
 router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM campaigns WHERE id = $1 AND user_id = $2',
+      `SELECT c.*, bp.offer, bp.avatar, bp.problems, bp.desires, bp.tone
+       FROM campaigns c
+       JOIN business_profiles bp ON c.business_profile_id = bp.id
+       WHERE c.id = $1 AND c.user_id = $2`,
       [req.params.id, req.user!.id]
     );
     
@@ -128,10 +148,37 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Campaign not found' });
     }
     
-    const campaign = result.rows[0];
-    const content = JSON.parse(campaign.content);
+    const row = result.rows[0];
     
-    res.json({ campaign: content });
+    // Reconstruct the campaign data from individual columns
+    const campaign = {
+      vsl: {
+        vslScriptA: row.vsl_script_a,
+        vslScriptB: row.vsl_script_b
+      },
+      ads: {
+        videoScripts: row.video_scripts,
+        adCopyA: row.ad_copy_a,
+        adCopyB: row.ad_copy_b,
+        headlineA: row.headline_a,
+        headlineB: row.headline_b
+      },
+      metadata: {
+        title: row.vsl_title,
+        generatedAt: row.created_at.toISOString(),
+        businessProfile: {
+          offer: row.offer,
+          avatar: row.avatar,
+          problems: row.problems,
+          desires: row.desires,
+          tone: row.tone,
+          language: row.language || 'en'
+        },
+        language: row.language || 'en'
+      }
+    };
+    
+    res.json({ campaign });
   } catch (error) {
     console.error('Error fetching campaign:', error);
     res.status(500).json({ error: 'Failed to fetch campaign' });
