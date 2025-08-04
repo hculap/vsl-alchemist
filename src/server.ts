@@ -5,6 +5,7 @@ import { pool } from './lib/database';
 import { authRoutes } from './routes/auth';
 import { profileRoutes } from './routes/profiles';
 import campaignRoutes from './routes/campaigns';
+import path from 'path';
 
 dotenv.config();
 
@@ -14,7 +15,15 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// Serve static files if they exist
+const publicPath = path.join(__dirname, '../public');
+try {
+  require('fs').accessSync(publicPath);
+  app.use(express.static(publicPath));
+} catch (error) {
+  console.log('📁 Public directory not found, skipping static file serving');
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -26,9 +35,20 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Serve the main app
+// API info endpoint
 app.get('/', (req, res) => {
-  res.sendFile('index.html', { root: 'public' });
+  res.json({
+    name: 'VSL-Alchemist API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      profiles: '/api/profiles',
+      campaigns: '/api/campaigns'
+    },
+    documentation: 'See README.md for API documentation'
+  });
 });
 
 // Start server
@@ -39,6 +59,10 @@ app.listen(PORT, async () => {
     console.log('✅ Database connection successful');
   } catch (error) {
     console.error('❌ Database connection failed:', error);
+    console.log('💡 To set up database:');
+    console.log('   1. Create a PostgreSQL database on Render');
+    console.log('   2. Set DATABASE_URL environment variable');
+    console.log('   3. Or use Docker: ./scripts/docker-deploy.sh');
   }
   
   console.log(`🚀 VSL-Alchemist server running on port ${PORT}`);
