@@ -471,7 +471,7 @@ export async function createCampaign(
         campaignData.ads.adCopyB,
         campaignData.ads.headlineA,
         campaignData.ads.headlineB,
-        campaignData.metadata?.language || 'en'
+        campaignData.metadata?.language || 'pl'
       ]
     );
     return result.rows[0];
@@ -515,9 +515,9 @@ export async function getCampaign(userId: number, campaignId: number): Promise<C
           problems: row.problems,
           desires: row.desires,
           tone: row.tone,
-          language: row.language || 'en'
+          language: row.language || 'pl'
         },
-        language: row.language || 'en'
+        language: row.language || 'pl'
       }
     };
   } catch (error) {

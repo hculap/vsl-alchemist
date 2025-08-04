@@ -346,7 +346,7 @@ class VSLAlchemist {
         const select = document.getElementById('campaignLanguage');
         if (!select || !this.availableLanguages) return;
 
-        select.innerHTML = '<option value="">Auto-wykryj z profilu</option>' +
+        select.innerHTML = '<option value="">Polski (domyślny)</option>' +
             this.availableLanguages.map(lang => `
                 <option value="${lang.code}">${lang.name}</option>
             `).join('');
@@ -486,7 +486,7 @@ class VSLAlchemist {
             'fr': 'Francuski',
             'de': 'Niemiecki'
         };
-        return languageNames[code] || 'Angielski';
+        return languageNames[code] || 'Polski';
     }
 
     populateProfileSelect(profiles) {

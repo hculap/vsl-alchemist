@@ -51,7 +51,7 @@ export async function initializeDatabase(): Promise<boolean> {
         problems TEXT NOT NULL,
         desires TEXT NOT NULL,
         tone VARCHAR(50) NOT NULL,
-        language VARCHAR(10) DEFAULT 'en',
+        language VARCHAR(10) DEFAULT 'pl',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -71,7 +71,7 @@ export async function initializeDatabase(): Promise<boolean> {
         ad_copy_b TEXT,
         headline_a VARCHAR(255),
         headline_b VARCHAR(255),
-        language VARCHAR(10) DEFAULT 'en',
+        language VARCHAR(10) DEFAULT 'pl',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -79,9 +79,9 @@ export async function initializeDatabase(): Promise<boolean> {
     
     // Add missing columns to existing tables (migration)
     try {
-      await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'en\'');
+      await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'pl\'');
       await pool.query('ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
-      await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'en\'');
+      await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT \'pl\'');
       await pool.query('ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
       console.log('✅ Database migration completed');
     } catch (error) {

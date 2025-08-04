@@ -52,7 +52,7 @@ router.post('/generate-titles', requireAuth, async (req: AuthRequest, res) => {
     const result = await generateTitlesFlow({
       businessProfile: {
         ...businessProfile,
-        language: businessProfile.language || 'en'
+        language: businessProfile.language || 'pl'
       }
     });
     
@@ -81,7 +81,7 @@ router.post('/generate', requireAuth, async (req: AuthRequest, res) => {
     const businessProfile = profileResult.rows[0];
     
     // Use provided language or fall back to detected language from profile
-    const campaignLanguage = language || businessProfile.language || 'en';
+    const campaignLanguage = language || businessProfile.language || 'pl';
     
     // Generate campaign using the selected language
     const result = await masterCampaignFlow({
@@ -172,9 +172,9 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
           problems: row.problems,
           desires: row.desires,
           tone: row.tone,
-          language: row.language || 'en'
+          language: row.language || 'pl'
         },
-        language: row.language || 'en'
+        language: row.language || 'pl'
       }
     };
     
