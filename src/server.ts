@@ -16,11 +16,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files if they exist
+// Serve static files if they exist 
 const publicPath = path.join(__dirname, '../public');
 try {
   require('fs').accessSync(publicPath);
   app.use(express.static(publicPath));
+  console.log('✅ Static files served from:', publicPath);
 } catch (error) {
   console.log('📁 Public directory not found, skipping static file serving');
 }
