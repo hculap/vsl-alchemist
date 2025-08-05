@@ -639,10 +639,8 @@ class VSLAlchemist {
         const vslTitle = document.getElementById('vslTitle').value;
         const language = document.getElementById('campaignLanguage').value;
 
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Generowanie...';
-        submitBtn.disabled = true;
+        // Show loading modal
+        this.showLoadingModal('Generowanie kampanii...');
 
         try {
             const response = await fetch('/api/campaigns/generate', {
@@ -656,20 +654,20 @@ class VSLAlchemist {
 
             if (response.ok) {
                 const data = await response.json();
+                this.hideLoadingModal();
                 this.showAlert('Kampania wygenerowana pomyślnie!', 'success');
                 document.getElementById('campaignForm').reset();
                 this.loadCampaigns();
                 this.viewCampaignData(data.campaign);
             } else {
                 const data = await response.json();
+                this.hideLoadingModal();
                 this.showAlert(data.error || 'Nie udało się wygenerować kampanii', 'error');
             }
         } catch (error) {
+            this.hideLoadingModal();
             this.showAlert('Błąd sieci. Spróbuj ponownie.', 'error');
             console.error('Generate campaign error:', error);
-        } finally {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
         }
     }
 
@@ -852,6 +850,30 @@ class VSLAlchemist {
         setTimeout(() => {
             alert.style.display = 'none';
         }, 5000);
+    }
+
+    showLoadingModal(message = 'Generowanie kampanii...') {
+        const modal = document.createElement('div');
+        modal.id = 'loadingModal';
+        modal.className = 'modal';
+        modal.style.display = 'block';
+        modal.innerHTML = `
+            <div class="modal-content loading-modal">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h3>${message}</h3>
+                    <p>Proszę czekać, to może potrwać kilka minut...</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    hideLoadingModal() {
+        const modal = document.getElementById('loadingModal');
+        if (modal) {
+            modal.remove();
+        }
     }
 
     async editProfile(profileId) {

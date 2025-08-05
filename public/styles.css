@@ -1181,3 +1181,42 @@ select:focus {
         text-align: center;
     }
 }
+
+/* Loading Modal Styles */
+.loading-modal {
+    max-width: 400px !important;
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loading-content h3 {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.loading-content p {
+    color: var(--text-light);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Prevent closing loading modal */
+#loadingModal .close {
+    display: none;
+}
+
+#loadingModal {
+    pointer-events: auto;
+}
+
+#loadingModal .modal-content {
+    pointer-events: none;
+}
