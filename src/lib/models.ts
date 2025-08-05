@@ -647,10 +647,10 @@ export async function getCampaign(userId: number, campaignId: number): Promise<C
   }
 }
 
-export async function getUserCampaigns(userId: number): Promise<Array<{ id: number; title: string; createdAt: string }>> {
+export async function getUserCampaigns(userId: number): Promise<Array<{ id: number; title: string; createdAt: string; language: string }>> {
   try {
     const result = await pool.query(
-      `SELECT id, vsl_title, created_at 
+      `SELECT id, vsl_title, created_at, language 
        FROM campaigns 
        WHERE user_id = $1 
        ORDER BY created_at DESC`,
@@ -660,7 +660,8 @@ export async function getUserCampaigns(userId: number): Promise<Array<{ id: numb
     return result.rows.map(row => ({
       id: row.id,
       title: row.vsl_title,
-      createdAt: row.created_at.toISOString()
+      createdAt: row.created_at.toISOString(),
+      language: row.language || 'pl'
     }));
   } catch (error) {
     console.error('Error fetching user campaigns:', error);
