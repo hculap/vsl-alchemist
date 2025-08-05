@@ -537,6 +537,13 @@ select:focus {
     border-color: var(--primary-color);
 }
 
+.title-suggestion.selected {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
 .title-content {
     display: flex;
     flex-direction: column;

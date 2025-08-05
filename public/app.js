@@ -600,7 +600,7 @@ class VSLAlchemist {
                 <div class="title-content">
                     <span class="title-text">${title}</span>
                     <div class="title-actions">
-                        <button class="btn-small btn-primary" onclick="app.selectTitle('${title.replace(/'/g, "\\'")}')">✓ Użyj Tego</button>
+                        <button class="btn-small btn-primary" onclick="app.selectTitle('${title.replace(/'/g, "\\'")}', this)">✓ Użyj Tego</button>
                     </div>
                 </div>
             </div>
@@ -609,23 +609,28 @@ class VSLAlchemist {
         suggestionsDiv.style.display = 'block';
     }
 
-    selectTitle(title) {
+    selectTitle(title, element) {
+        // Fill the input with the selected title
         document.getElementById('vslTitle').value = title;
-        this.showAlert('Tytuł wybrany! Możesz teraz wygenerować swoją kampanię.', 'success');
         
-        // Hide the suggestions after selection
-        document.getElementById('titleSuggestions').style.display = 'none';
+        // Remove previous highlights from all title suggestions
+        document.querySelectorAll('.title-suggestion').forEach(suggestion => {
+            suggestion.classList.remove('selected');
+        });
         
-        // Scroll to the campaign form and highlight the generate button
+        // Highlight the selected card
+        if (element) {
+            element.closest('.title-suggestion').classList.add('selected');
+        }
+        
+        this.showAlert('Tytuł wybrany! Możesz edytować i kliknąć "Generuj Kampanię".', 'success');
+        
+        // Scroll to the campaign form
         const campaignForm = document.getElementById('campaignForm');
         campaignForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
         
-        // Add a subtle highlight to the generate button
-        const generateBtn = campaignForm.querySelector('button[type="submit"]');
-        generateBtn.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.3)';
-        setTimeout(() => {
-            generateBtn.style.boxShadow = '';
-        }, 2000);
+        // Focus on the title input for easy editing
+        document.getElementById('vslTitle').focus();
     }
 
     async handleGenerateCampaign(e) {
