@@ -3,7 +3,7 @@ import { requireAuth, AuthRequest } from '../lib/auth';
 import { pool } from '../lib/database';
 import { masterCampaignFlow } from '../flows/masterCampaignFlow';
 import { generateTitlesFlow } from '../flows/generateTitlesFlow';
-import { LANGUAGE_NAMES, LANGUAGE_PROMPTS } from '../lib/models';
+import { LANGUAGE_NAMES, LANGUAGE_PROMPTS, createCampaign, getUserCampaigns } from '../lib/models';
 
 const router = express.Router();
 
@@ -20,11 +20,8 @@ router.get('/languages', (req, res) => {
 // Get all campaigns for the authenticated user
 router.get('/', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const result = await pool.query(
-      'SELECT * FROM campaigns WHERE user_id = $1 ORDER BY created_at DESC',
-      [req.user!.id]
-    );
-    res.json({ campaigns: result.rows });
+    const campaigns = await getUserCampaigns(req.user!.id);
+    res.json({ campaigns });
   } catch (error) {
     console.error('Error fetching campaigns:', error);
     res.status(500).json({ error: 'Failed to fetch campaigns' });
@@ -94,32 +91,21 @@ router.post('/generate', requireAuth, async (req: AuthRequest, res) => {
     });
     
     // Save campaign to database using the correct schema
-    const campaignResult = await pool.query(
-      `INSERT INTO campaigns (
-        user_id, business_profile_id, vsl_title, 
-        vsl_script_a, vsl_script_b, 
-        video_scripts, ad_copy_a, ad_copy_b, 
-        headline_a, headline_b, language
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-      [
-        req.user!.id, 
-        businessProfileId, 
-        vslTitle, 
-        result.vsl.vslScriptA,
-        result.vsl.vslScriptB,
-        JSON.stringify(result.ads.videoScripts),
-        result.ads.adCopyA,
-        result.ads.adCopyB,
-        result.ads.headlineA,
-        result.ads.headlineB,
-        campaignLanguage
-      ]
+    const campaignResult = await createCampaign(
+      req.user!.id,
+      businessProfileId,
+      vslTitle,
+      result
     );
+    
+    if (!campaignResult) {
+      return res.status(500).json({ error: 'Failed to save campaign' });
+    }
     
     res.json({ 
       campaign: {
         ...result,
-        id: campaignResult.rows[0].id,
+        id: campaignResult.id,
         metadata: {
           ...result.metadata,
           language: campaignLanguage,
