@@ -600,7 +600,7 @@ class VSLAlchemist {
                 <div class="title-content">
                     <span class="title-text">${title}</span>
                     <div class="title-actions">
-                        <button class="btn-small btn-primary" onclick="app.selectTitle('${title.replace(/'/g, "\\'")}', this)">✓ Użyj Tego</button>
+                        <button type="button" class="btn-small btn-primary" onclick="app.selectTitle('${title.replace(/'/g, "\\'")}', this)">✓ Użyj Tego</button>
                     </div>
                 </div>
             </div>
@@ -610,6 +610,11 @@ class VSLAlchemist {
     }
 
     selectTitle(title, element) {
+        // Prevent any form submission
+        if (element) {
+            element.preventDefault && element.preventDefault();
+        }
+        
         // Fill the input with the selected title
         document.getElementById('vslTitle').value = title;
         
