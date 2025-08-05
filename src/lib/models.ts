@@ -521,10 +521,10 @@ export async function getBusinessProfile(userId: number, profileId: number): Pro
   }
 }
 
-export async function getUserBusinessProfiles(userId: number): Promise<Array<BusinessProfile & { id: number }>> {
+export async function getUserBusinessProfiles(userId: number): Promise<Array<BusinessProfile & { id: number; createdAt: string }>> {
   try {
     const result = await pool.query(
-      `SELECT id, offer, avatar, problems, desires, tone, language 
+      `SELECT id, offer, avatar, problems, desires, tone, language, created_at 
        FROM business_profiles 
        WHERE user_id = $1 
        ORDER BY created_at DESC`,
@@ -537,7 +537,8 @@ export async function getUserBusinessProfiles(userId: number): Promise<Array<Bus
       problems: row.problems,
       desires: row.desires,
       tone: row.tone,
-      language: row.language || 'pl'
+      language: row.language || 'pl',
+      createdAt: row.created_at.toISOString()
     }));
   } catch (error) {
     console.error('Error fetching user business profiles:', error);

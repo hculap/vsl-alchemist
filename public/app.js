@@ -439,7 +439,7 @@ class VSLAlchemist {
                                 </td>
                                 <td><span class="tone-badge tone-${profile.tone.toLowerCase()}">${profile.tone}</span></td>
                                 <td><span class="language-badge">${this.getLanguageName(profile.language)}</span></td>
-                                <td>${new Date(profile.created_at).toLocaleDateString()}</td>
+                                <td>${new Date(profile.createdAt).toLocaleDateString()}</td>
                                 <td>
                                     <button class="btn-small btn-outline" onclick="app.editProfile(${profile.id})">✏️ Edytuj</button>
                                     <button class="btn-small btn-danger" onclick="app.deleteProfile(${profile.id})">🗑️ Usuń</button>
@@ -480,7 +480,7 @@ class VSLAlchemist {
                                     </div>
                                 </td>
                                 <td><span class="language-badge">${this.getLanguageName(campaign.language || 'en')}</span></td>
-                                <td>${new Date(campaign.created_at).toLocaleDateString()}</td>
+                                <td>${new Date(campaign.createdAt).toLocaleDateString()}</td>
                                 <td>
                                     <button class="btn-small btn-primary" onclick="app.viewCampaign(${campaign.id})">👁️ Zobacz</button>
                                     <button class="btn-small btn-outline" onclick="app.exportCampaign(${campaign.id})">📥 Eksportuj</button>
